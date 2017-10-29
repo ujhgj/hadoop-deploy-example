@@ -1,4 +1,5 @@
 ---
 - include: hadoop.yml
 - include: hive.yml
+- include: spark.yml
 - include: demo_access.yml

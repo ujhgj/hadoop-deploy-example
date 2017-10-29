@@ -61,6 +61,13 @@ Run HiveServer2 and Beeline in embedded mode:
 
     $ beeline -u jdbc:hive2://
 
+
+### Apache Spark
+
+Spark is also present, you can make calls to Spark API like this:
+
+    $ /opt/spark/bin/run-example SparkPi 10
+
 ### Issues
 
 1) Need to fill ip addresses in `slaves` and inventory files manually
