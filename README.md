@@ -57,13 +57,9 @@ Starting from Hive 2.1, we need to run the schematool command below as an initia
 
     $ schematool -dbType derby -initSchema
 
-HiveServer2 (introduced in Hive 0.11) has its own CLI called Beeline.  HiveCLI is now deprecated in favor of Beeline, as it lacks the multi-user, security, and other capabilities of HiveServer2.  To run HiveServer2 and Beeline from shell:
+Run HiveServer2 and Beeline in embedded mode:
 
-    $ hiveserver2
-
-Beeline is started with the JDBC URL of the HiveServer2, which depends on the address and port where HiveServer2 was started.  By default, it will be (localhost:10000), so the command will look like
-
-    $ beeline -u jdbc:hive2://localhost:10000
+    $ beeline -u jdbc:hive2://
 
 ### Issues
 
