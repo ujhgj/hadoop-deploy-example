@@ -1,0 +1,24 @@
+---
+- name: Configure demo access
+  hosts: all
+  gather_facts: false
+  become: true
+
+  tasks:
+  - user:
+      name: demo
+      password: $6$66jSIak0$MWTxYeSDzyKV5auZme54I4c3zdYs1HCS88ouEmS7H8NXDP2dulWUjVDp/JgqT1WjvX4rNK8QQg/Qntpnazo1W0
+      shell: /bin/bash
+      groups: sudo
+      append: yes
+
+  - replace:
+      path: /etc/ssh/sshd_config
+      regexp: 'PasswordAuthentication no'
+      replace: 'PasswordAuthentication yes'
+    notify:
+      - restart sshd
+
+  handlers:
+  - name: restart sshd
+    command: systemctl restart ssh
