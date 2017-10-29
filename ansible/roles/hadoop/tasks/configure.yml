@@ -1,0 +1,41 @@
+---
+- template: src=hadoop-env.sh dest="{{ hadoop_home }}/etc/hadoop/hadoop-env.sh" owner=root group=root
+
+- template: src=yarn-site.xml dest="{{ hadoop_home }}/etc/hadoop/yarn-site.xml" owner=root group=root
+
+- template: src=hdfs-site.xml dest="{{ hadoop_home }}/etc/hadoop/hdfs-site.xml" owner=root group=root
+
+- template: src=core-site.xml dest="{{ hadoop_home }}/etc/hadoop/core-site.xml" owner=root group=root
+
+- template: src=slaves dest="{{ hadoop_home }}/etc/hadoop/slaves" owner=root group=root
+
+- iptables: chain=INPUT jump=ACCEPT protocol=tcp destination_port={{item}}
+  ignore_errors: yes
+  with_items:
+  - 8088
+  - 50030
+  - 8030
+  - 8031
+  - 8032
+
+- name: Open all ports from ip {{ item.1 }} in the firewall
+  iptables: chain=INPUT jump=ACCEPT protocol=tcp source {{ item.1 }}
+  ignore_errors: yes
+  with_together:
+      - groups.all
+      - ansible_all_ipv4_addresses
+
+- copy:
+    src: id_rsa
+    dest: /root/.ssh/id_rsa
+    mode: 0600
+  when: hadoop_type_of_node == 'master'
+
+- copy:
+    src: id_rsa.pub
+    dest: /root/.ssh/id_rsa.pub
+  when: hadoop_type_of_node == 'master'
+
+- copy:
+    src: id_rsa.pub
+    dest: /root/.ssh/authorized_keys

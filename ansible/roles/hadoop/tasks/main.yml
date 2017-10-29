@@ -1,0 +1,8 @@
+---
+- stat: path=/opt/hadoop
+  register: hadoop_installed
+
+- include: install.yml
+  when: not hadoop_installed.stat.exists
+
+- include: configure.yml

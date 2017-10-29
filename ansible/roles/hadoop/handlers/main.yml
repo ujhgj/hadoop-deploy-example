@@ -1,0 +1,5 @@
+- name: source /etc/profile
+  command: source /etc/profile executable=/bin/bash
+
+- name: source /etc/bash.bashrc
+  command: source /etc/bash.bashrc executable=/bin/bash

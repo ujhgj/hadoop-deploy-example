@@ -1,0 +1,49 @@
+- name: Configure Apache Hive
+  hosts: tag_hadoop-master
+  gather_facts: false
+  become: true
+  vars:
+    hive_home: /opt/hive
+    hive_version: 2.3.0
+
+  pre_tasks:
+  - name: Install python for Ansible
+    raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+    changed_when: false
+
+  tasks:
+  - name: Get Hive's tarball
+    get_url:
+      url: http://mirror.linux-ia64.org/apache/hive/hive-{{ hive_version }}/apache-hive-{{ hive_version }}-bin.tar.gz
+      dest: /tmp/apache-hive-{{ hive_version }}-bin.tar.gz
+      force: no
+
+  - unarchive: src=/tmp/apache-hive-{{ hive_version }}-bin.tar.gz dest=/opt copy=no
+
+  - file: dest={{ hive_home }} src=/opt/apache-hive-{{ hive_version }}-bin state=link force=yes
+
+  - name: Add Hive binaries to the PATH
+    lineinfile:
+      path: /etc/profile
+      state: present
+      line: 'PATH="$PATH:{{ hive_home }}/bin"'
+    notify:
+      - source /etc/profile
+
+  - lineinfile:
+      path: /etc/bash.bashrc
+      state: present
+      line: 'PATH="$PATH:{{ hive_home }}/bin"'
+    notify:
+      - source /etc/bash.bashrc
+
+  - iptables: chain=INPUT jump=ACCEPT protocol=tcp destination_port={{item}}
+    ignore_errors: yes
+    with_items:
+    - 10000
+
+  handlers:
+  - name: source /etc/profile
+    command: source /etc/profile executable=/bin/bash
+  - name: source /etc/bash.bashrc
+    command: source /etc/bash.bashrc executable=/bin/bash

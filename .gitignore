@@ -1,0 +1,24 @@
+*.log
+*.logs
+*.cache
+
+# Terraform
+*.tfstate
+*.tfstate.*.backup
+*.tfstate.backup
+*.tfvars
+*.terraform.tfstate.lock.info
+.terraform/
+terraform/environment/*/backend.tf
+
+# Ansible
+*.retry
+ansible/inventory/gce.ini
+ansible/project.json
+ansible/hosts
+ansible/roles/hadoop/files/id_rsa
+ansible/roles/hadoop/files/id_rsa.pub
+
+# Vagrant
+.vagrant/
+ansible/roles/hadoop/templates/slaves

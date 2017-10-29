@@ -1,0 +1,44 @@
+---
+- name: Apt install deps
+  action: apt pkg={{ item }} state=installed update_cache=yes cache_valid_time=604800
+  with_items:
+  - wget
+  - tar
+  - gzip
+  - openjdk-8-jre
+
+# download only in the ansible master node
+- local_action: get_url url=http://mirror.linux-ia64.org/apache/hadoop/common/hadoop-{{ hadoop_version }}/hadoop-{{ hadoop_version }}.tar.gz dest=/tmp/hadoop-{{ hadoop_version }}.tar.gz force=no
+  register: result
+  until: result|success
+  retries: 5
+  delay: 2
+  sudo: no
+  when: hadoop_type_of_node == 'master'
+
+# other nodes wait for it
+- local_action: wait_for path=/tmp/hadoop-{{ hadoop_version }}.tar.gz
+  sudo: no
+  when: hadoop_type_of_node != 'master'
+
+- copy: src=/tmp/hadoop-{{ hadoop_version }}.tar.gz dest=/tmp/hadoop-{{ hadoop_version }}.tar.gz force=no
+
+- unarchive: src=/tmp/hadoop-{{ hadoop_version }}.tar.gz dest=/opt creates=/opt/hadoop-{{ hadoop_version }} copy=no
+
+- file: dest={{ hadoop_home }} src=/opt/hadoop-{{ hadoop_version }} state=link force=yes
+
+- file: dest=/opt/hadoop src={{ hadoop_home }} state=link force=yes
+
+- lineinfile:
+    path: /etc/profile
+    state: present
+    line: 'PATH="$PATH:{{ hadoop_home }}/bin:{{ hadoop_home }}/sbin"'
+  notify:
+    - source /etc/profile
+
+- lineinfile:
+    path: /etc/bash.bashrc
+    state: present
+    line: 'PATH="$PATH:{{ hadoop_home }}/bin:{{ hadoop_home }}/sbin"'
+  notify:
+    - source /etc/bash.bashrc
