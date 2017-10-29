@@ -1,4 +1,4 @@
-# Hadoop cluster + Hive
+# Hadoop cluster + Hive + Apache Spark
 
 Example Terraform/Ansible IaC repository for Hadoop cluster and Apache Hive
 
