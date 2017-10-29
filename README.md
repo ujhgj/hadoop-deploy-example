@@ -9,8 +9,6 @@ You can deploy the cluster locally using Vagrant. There is an example of Vagrant
 
 There's also Terraform example of deployment for GCE
 
-### Terraform
-
     $ cd terraform
     $ terraform init
     $ cp terraform.tfvars.example terraform.tfvars
@@ -20,10 +18,15 @@ There's also Terraform example of deployment for GCE
 
 Generate rsa key for master-slave interaction and place it to `ansible/roles/hadoop/files/id_rsa` and `ansible/roles/hadoop/files/id_rsa.pub`
 
-Bring up cluster:
+You have to fill up `slaves` and `hosts` files manually. See examples in `slaves.vagrant` and `hosts.sample` files.
 
-    $ ansible-playbook cluster.yml --limit tag_hadoop-master --extra-vars "hadoop_master=10.132.0.3 hadoop_type_of_node=master"
-    $ ansible-playbook cluster.yml --limit tag_hadoop-slave --extra-vars "hadoop_master=10.132.0.3 hadoop_type_of_node=slave"
+    $ vi ansible/roles/hadoop/templates/slaves
+    $ vi ansible/hosts
+    
+To bring up cluster:
+
+    $ ansible-playbook cluster.yml --limit tag_hadoop-master --extra-vars "hadoop_master=<master-ip> hadoop_type_of_node=master"
+    $ ansible-playbook cluster.yml --limit tag_hadoop-slave --extra-vars "hadoop_master=<master-ip> hadoop_type_of_node=slave"
 
 The first time you bring up HDFS, it must be formatted. Format a new distributed filesystem as hdfs:
 
